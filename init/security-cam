@@ -1,0 +1,52 @@
+#! /bin/sh
+# /etc/init.d/security-cam
+
+### BEGIN INIT INFO
+# Provides:          security-cam
+# Required-Start:    avahi-daemon
+# Required-Stop:     avahi-daemon
+# Default-Start:     3 4 5
+# Default-Stop:      0 1 2 6
+# Short-Description: Wrapper script to launch the security-cam software
+# Description:       The security-cam software should be built before booting (or
+#                    starting the daemon).
+### END INIT INFO
+
+### INSTALL PROCESS ###
+#1) Copy this script to /etc/init.d/security-cam
+#2) Reload service with 'sudo systemctl daemon-reload'
+#3) Enable the service with 'sudo systemctl enable security-cam'
+#4) Launch service with 'sudo systemctl start security-cam'
+
+# Verify the status of the service with 'systemctl status security-cam'
+
+### REBUILD/UPGRADE ###
+#1) Build new code with './gradlew build'
+#2) Relaunch service with 'sudo systemctl restart security-cam'
+
+### STARTING ###
+#1) Start the service with 'sudo systemctl start security-cam'
+
+### STOPPING ###
+#1) Temporarily stop service with 'sudo systemctl stop security-cam'
+
+# Carry out specific functions when asked to by the system
+case "$1" in
+  start)
+    echo "Starting robot security-cam software"
+    cd /home/pi/git/Security-Cam/output
+    chmod +x runSecurityCamera
+    ./runSecurityCamera > security-cam.log 2>security-cam.err &
+    ;;
+  stop)
+    echo "Stopping security software"
+    # TODO: use proper pid-file to cleanly stop the camera recording
+    kill -9 $(ps -efa | grep Camera | grep java | tr -s ' ' | cut -d' ' -f2)
+    ;;
+  *)
+    echo "Usage: /etc/init.d/security-cam {start|stop}"
+    exit 1
+    ;;
+esac
+
+exit 0
